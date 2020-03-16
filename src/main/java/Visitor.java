@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Scanner;
@@ -18,7 +15,6 @@ public class Visitor {
     public static String person_assisted;
 
 
-
     private static final Logger logger = LogManager.getLogger(Visitor.class.getName());
 
     public Visitor(String fullname, int age, LocalDate visitdate, LocalTime visittime, String comments, String person_assisted) {
@@ -30,55 +26,55 @@ public class Visitor {
         this.person_assisted = person_assisted;
     }
 
-    public static void save() {
-        try{
-            if(!fullname.isEmpty()) {
+    public static void save() throws IOException {
+        try {
+            if (!fullname.isEmpty()) {
                 File myObj = new File("visitor_" + fullname.toLowerCase().replace(" ", "_") + ".txt");
                 FileWriter myWriter = new FileWriter(myObj.getName());
-                myWriter.write(fullname + "\n" + age + "\n"+visitdate.now()+"\n"+visittime.now()+"\n"+comments+"\n"+person_assisted);
+                myWriter.write(fullname + "\n" + age + "\n" + visitdate.now() + "\n" + visittime.now() + "\n" + comments + "\n" + person_assisted);
                 myWriter.close();
-                logger.debug("File successful saved");
+                logger.info("File successful saved");
             }
-
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             logger.error("An error has occured while saving user!");
             e.printStackTrace();
         }
     }
 
-    public static void load(String name) {
+    public static void load(String name) throws IOException {
         try {
             name = "visitor_" + name.toLowerCase().replace(" ", "_") + ".txt";
-//            Scanner myReader = new Scanner(name);
             File myObj = new File(name);
-            if (myObj.exists()){
-                System.out.println("File name: " + myObj.getName());
-                System.out.println("Absolute path: " + myObj.getAbsolutePath());
-                System.out.println("Writeable: " + myObj.canWrite());
-                System.out.println("Readable " + myObj.canRead());
-                System.out.println("File size in bytes " + myObj.length());
-            } else {
-                System.out.println("The file does not exist.");
+            if (myObj.exists()) {
+                BufferedReader in = new BufferedReader(new FileReader(myObj));
+                String line;
+                while((line = in.readLine()) != null)
+                {
+                    logger.info(line);
+                }
+                in.close();
             }
-
-//            while (myReader.hasNextLine()) {
-//                String data = myReader.nextLine();
-//                System.out.println(data);
-//            }
-//            myReader.close();
-
-        }catch (Exception e){
-            System.out.println("File was not found!");
+        } catch (FileNotFoundException e) {
+            logger.error("File was not found!");
             e.printStackTrace();
         }
     }
 
-        public static void main(String[] arg) throws IOException {
+    public static void main(String[] arg) throws IOException {
 
         Visitor Ryan = new Visitor(
-                "Ryan Cooper",30, LocalDate.now(), LocalTime.now(), "this is my comment", "Raymond Serekwane");
+                "Ryan Cooper", 30, LocalDate.now(), LocalTime.now(), "this is my comment", "Raymond Serekwane");
         Ryan.save();
-        Ryan.load("Ryan Cooper");
+        Ryan.load("Ryan Coope");
 
+        Visitor Bob = new Visitor(
+                "Bob Smith", 25, LocalDate.now(), LocalTime.now(), "this is a comment from Bob", "Raymond Serekwane");
+        Bob.save();
+        Bob.load("Bob Smith");
+
+        Visitor Charlie = new Visitor(
+                "Charlie Jones", 28, LocalDate.now(), LocalTime.now(), "this is a comment from Charlie", "Thabo Monamudi");
+        Charlie.save();
+        Charlie.load("Charlie Jones");
     }
 }
