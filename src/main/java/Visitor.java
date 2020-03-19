@@ -27,54 +27,60 @@ public class Visitor {
     }
 
     public static void save() throws IOException {
+        FileWriter myWriter = null;
         try {
             if (!fullname.isEmpty()) {
                 File myObj = new File("visitor_" + fullname.toLowerCase().replace(" ", "_") + ".txt");
-                FileWriter myWriter = new FileWriter(myObj.getName());
+                myWriter = new FileWriter(myObj.getName());
                 myWriter.write(fullname + "\n" + age + "\n" + visitdate.now() + "\n" + visittime.now() + "\n" + comments + "\n" + person_assisted);
-                myWriter.close();
+
                 logger.info("File successful saved");
             }
         } catch (FileNotFoundException e) {
             logger.error("An error has occured while saving user!");
             e.printStackTrace();
+        } finally {
+            myWriter.close();
         }
     }
 
     public static void load(String name) throws IOException {
-        try {
-            name = "visitor_" + name.toLowerCase().replace(" ", "_") + ".txt";
-            File myObj = new File(name);
+        BufferedReader reader = null;
+        name = "visitor_" + name.toLowerCase().replace(" ", "_") + ".txt";
+        File myObj = new File(name);
             if (myObj.exists()) {
-                BufferedReader in = new BufferedReader(new FileReader(myObj));
-                String line;
-                while((line = in.readLine()) != null)
-                {
-                    logger.info(line);
+                reader = new BufferedReader(new FileReader(myObj));
+
+                String eachline;
+                while ((eachline = reader.readLine()) != null) {
+                    logger.info(eachline);
                 }
-                in.close();
+            } else{
+            if (reader != null) {
+                reader.close();
             }
-        } catch (FileNotFoundException e) {
+
             logger.error("File was not found!");
-            e.printStackTrace();
         }
+
+        System.out.println("\n");
     }
 
     public static void main(String[] arg) throws IOException {
+            Visitor Ryan = new Visitor(
+                    "Ryan Cooper", 30, LocalDate.now(), LocalTime.now(), "this is my comment", "Raymond Serekwane");
+            Ryan.save();
+            Ryan.load("Rya Coope");
 
-        Visitor Ryan = new Visitor(
-                "Ryan Cooper", 30, LocalDate.now(), LocalTime.now(), "this is my comment", "Raymond Serekwane");
-        Ryan.save();
-        Ryan.load("Ryan Coope");
+            Visitor Bob = new Visitor(
+                    "Bob Smith", 25, LocalDate.now(), LocalTime.now(), "this is a comment from Bob", "Raymond Serekwane");
+            Bob.save();
+            Bob.load("Bob Smith");
 
-        Visitor Bob = new Visitor(
-                "Bob Smith", 25, LocalDate.now(), LocalTime.now(), "this is a comment from Bob", "Raymond Serekwane");
-        Bob.save();
-        Bob.load("Bob Smith");
+            Visitor Charlie = new Visitor(
+                    "Charlie Jones", 28, LocalDate.now(), LocalTime.now(), "this is a comment from Charlie", "Thabo Monamudi");
+            Charlie.save();
+            Charlie.load("Charlie Jones");
 
-        Visitor Charlie = new Visitor(
-                "Charlie Jones", 28, LocalDate.now(), LocalTime.now(), "this is a comment from Charlie", "Thabo Monamudi");
-        Charlie.save();
-        Charlie.load("Charlie Jones");
     }
 }
